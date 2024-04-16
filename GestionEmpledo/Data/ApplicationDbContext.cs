@@ -9,7 +9,8 @@ namespace GestionEmpledo.Data
         {
         }
 
-        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Empleado> Empleados { get; set; }
+        public DbSet<RegistrosEntrada_Salida> RegistrosEntrada_Salidas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
