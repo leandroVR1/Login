@@ -60,9 +60,7 @@ namespace GestionEmpledo.Controllers
     }
 
     // POST: /Login/GuardarEntradaSalida
-    [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
+  public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
 {
     if (ModelState.IsValid)
     {
@@ -70,17 +68,20 @@ public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
         var empleadoId = HttpContext.Session.GetInt32("EmpleadoId");
 
         if (empleadoId.HasValue)
-        {
-            // Asignar el Id del empleado al campo IdEmpleado del modelo
-            model.IdEmpleado = empleadoId.Value;
+{
+    // Agregar registro de depuración para verificar el Id del empleado
+    Console.WriteLine($"Id del Empleado: {empleadoId}");
 
-            // Guardar en la base de datos
-            _context.RegistrosEntrada_Salida.Add(model);
-            _context.SaveChanges();
-            
-            // Redireccionar a alguna página de éxito o acción
-            return RedirectToAction("Index", "Home");
-        }
+    // Asignar el Id del empleado al campo IdEmpleado del modelo
+    model.IdEmpleado = empleadoId.Value;
+
+    // Guardar en la base de datos
+    _context.RegistrosEntrada_Salida.Add(model);
+    _context.SaveChanges();
+    
+    // Redireccionar a la vista "Historial"
+    return RedirectToAction("Historial");
+}
         else
         {
             // No se pudo obtener el Id del empleado de la sesión
@@ -88,8 +89,8 @@ public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
         }
     }
 
-    // Si el modelo no es válido, vuelve a mostrar el formulario con errores
-    return View(model);
+    // Si el modelo no es válido o si falla la obtención del Id del empleado, vuelve a mostrar el formulario con errores
+    return View("EntradaSalida", model);
 }
 
 
@@ -104,6 +105,36 @@ public IActionResult Historial()
     return View(registros);
 }
 
+// GeT: /Login/Empleados
+public IActionResult Empleados()
+{
+    // Obtener todos los empleados de la base de datos
+    var empleados = _context.Empleados
+       .ToList();
+
+    return View(empleados);
+}
+
+
+//Post: /Login/Create
+
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Empleado empleado)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Empleados.Add(empleado);
+                _context.SaveChanges();
+                return RedirectToAction("Empleados");
+            }
+            return View(empleado);
+        }
 
 
     }

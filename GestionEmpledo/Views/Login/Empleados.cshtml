@@ -14,8 +14,8 @@
     <div class="row mt-2">
         <div class="card">
             <div class="card-body">
-                
-                                <h2>Historial</h2>
+                 <a asp-controller="Login" asp-action="Create" class="btn btn-primary mb-3">Agregar Empleado</a>
+                                <h2>Empleados</h2>
                                 <form id="searchForm">
                                     <input type="text" id="searchInput" placeholder="Buscar por nombre...">
                                     <input type="submit" value="Buscar">
@@ -27,20 +27,26 @@
                     <thead>
                         <tr>
                              <th scope="col">Id</th>
-                            <th scope="col">Empleado</th>
-                            <th scope="col">Entrada</th>
-                            <th scope="col">Salida</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Telefono</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Contraseña</th>
+
                             
                         </tr>
                     </thead>
 
-                      @foreach (var registro in Model)
+                      @foreach (var empleado in Model)
 {
     <tr>
-        <th scope="row">@registro.Id</th>
-        <td>@registro.Empleado.Nombre</td>
-        <td>@registro.FechaEntrada</td>
-        <td>@registro.FechaSalida</td>
+        <th scope="row">@empleado.Id</th>
+        <td>@empleado.Nombre</td>
+        <td>@empleado.Apellido</td>
+        <td>@empleado.Telefono</td>
+        <td>@empleado.Correo</td>
+        <td>@empleado.Contraseña</td>
+
     </tr>
 }
 
