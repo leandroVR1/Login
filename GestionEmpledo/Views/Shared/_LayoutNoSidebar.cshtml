@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GestionEmpledo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GestionEmpledo.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">GestionEmpledo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - GestionEmpledo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+    <div class="sidebar">
+        <!-- Aquí va el código de la barra lateral -->
+        <div class="logo-box">
+            <a href="index.html">
+                <center><img src="" class="w-50" alt=""></center>
+            </a>
+        </div>
+        <div class="scrollbar">
+            <div class="logo-box">
+                <a href="">
+                    <center><img src="https://cdn.pixabay.com/photo/2020/07/06/17/43/learn-5377778_1280.png" class="w-50" alt=""></center>
+                </a>
+            </div>
+            <ul class="menu">
+                <li class="menu-title">Acciones</li>
+                <li class="menu-item">
+                    <a href="/User/Index" class="menu-link">
+                        <span class="menu-icon"><i data-feather="airplay"></i></span>
+                        <span>Gestion de Usuarios</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/User/GstLibros" class="menu-link">
+                        <i data-feather="users"></i><span>
+                        Gestion de Libros</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/Prestamo/Prestamo" class="menu-link">
+                        <i data-feather="users"></i><span>
+                        Registrar prestamo</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/Prestamo/Renovar" class="menu-link">
+                        <i data-feather="users"></i><span>
+                        Renovacion</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/Informe" class="menu-link">
+                        <span class="menu-icon"><i data-feather="activity"></i></span>
+                        <span class="menu-text"> Informe </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+

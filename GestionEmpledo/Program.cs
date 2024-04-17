@@ -1,23 +1,31 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using GestionEmpledo.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                            options.UseMySql(
-                                builder.Configuration.GetConnectionString("MySqlConnection"),
-                                Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
-// Agrega IHttpContextAccessor al contenedor de servicios
-builder.Services.AddHttpContextAccessor();
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Add session service
+builder.Services.AddSession();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -27,6 +35,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Use session middleware
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

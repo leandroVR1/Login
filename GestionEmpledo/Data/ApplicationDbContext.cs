@@ -10,11 +10,20 @@ namespace GestionEmpledo.Data
         }
 
         public DbSet<Empleado> Empleados { get; set; }
-        public DbSet<RegistrosEntrada_Salida> RegistrosEntrada_Salidas { get; set; }
+        public DbSet<RegistrosEntrada_Salida> RegistrosEntrada_Salida { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuraciones adicionales de tu modelo, como relaciones, restricciones, etc.
+            // Configurar el nombre de la tabla y las relaciones si es necesario
+            modelBuilder.Entity<RegistrosEntrada_Salida>()
+                .ToTable("RegistrosEntrada_Salida")
+                .HasKey(e => e.Id); // Ajusta el nombre de la tabla según sea necesario
+
+            // Configurar la relación entre RegistrosEntrada_Salida y Empleado
+            modelBuilder.Entity<RegistrosEntrada_Salida>()
+                .HasOne(r => r.Empleado)  // Una entrada y salida pertenece a un empleado
+                .WithMany()  // Un empleado puede tener múltiples entradas y salidas
+                .HasForeignKey(r => r.IdEmpleado); // Clave externa en RegistrosEntrada_Salida que apunta a la tabla Empleado
         }
     }
 }

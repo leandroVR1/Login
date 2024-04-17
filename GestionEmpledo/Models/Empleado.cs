@@ -1,3 +1,4 @@
+using System;
 namespace GestionEmpledo.Models
 {
     public class Empleado
@@ -10,13 +11,5 @@ namespace GestionEmpledo.Models
         public string Contraseña { get; set; }
     }
 
-    public class RegistrosEntrada_Salida
-    {
-        public int Id { get; set; }
-        public DateTime FechaEntrada { get; set; }
-        public DateTime FechaSalida { get; set; }
-        public int IdEmpleado { get; set; }
-
-        public Empleado? Empleado { get; set; }
-    }
+   
 }
