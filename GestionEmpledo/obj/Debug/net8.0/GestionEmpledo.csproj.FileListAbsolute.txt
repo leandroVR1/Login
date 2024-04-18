@@ -111,3 +111,4 @@
 /home/riwip5-023/Documents/leo/Login/GestionEmpledo/obj/Debug/net8.0/GestionEmpledo.pdb
 /home/riwip5-023/Documents/leo/Login/GestionEmpledo/obj/Debug/net8.0/GestionEmpledo.genruntimeconfig.cache
 /home/riwip5-023/Documents/leo/Login/GestionEmpledo/obj/Debug/net8.0/ref/GestionEmpledo.dll
+/home/riwip5-023/Documents/leo/Login/GestionEmpledo/bin/Debug/net8.0/System.Security.Permissions.dll

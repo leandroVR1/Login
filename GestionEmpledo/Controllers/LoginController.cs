@@ -53,76 +53,63 @@ namespace GestionEmpledo.Controllers
         }
 
         // GET: /Login/EntradaSalida
-          public IActionResult EntradaSalida()
-    {
-        var model = new RegistrosEntrada_Salida();
-        return View(model);
-    }
-
-    // POST: /Login/GuardarEntradaSalida
-  public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
-{
-    if (ModelState.IsValid)
-    {
-        // Obtener el Id del empleado de la sesión
-        var empleadoId = HttpContext.Session.GetInt32("EmpleadoId");
-
-        if (empleadoId.HasValue)
-{
-    // Agregar registro de depuración para verificar el Id del empleado
-    Console.WriteLine($"Id del Empleado: {empleadoId}");
-
-    // Asignar el Id del empleado al campo IdEmpleado del modelo
-    model.IdEmpleado = empleadoId.Value;
-
-    // Guardar en la base de datos
-    _context.RegistrosEntrada_Salida.Add(model);
-    _context.SaveChanges();
-    
-    // Redireccionar a la vista "Historial"
-    return RedirectToAction("Historial");
-}
-        else
+        public IActionResult EntradaSalida()
         {
-            // No se pudo obtener el Id del empleado de la sesión
-            ModelState.AddModelError("", "No se pudo obtener el Id del empleado.");
+            var model = new RegistrosEntrada_Salida();
+            return View(model);
         }
-    }
 
-    // Si el modelo no es válido o si falla la obtención del Id del empleado, vuelve a mostrar el formulario con errores
-    return View("EntradaSalida", model);
-}
+        // POST: /Login/GuardarEntradaSalida
+        public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
+        {
+            // Obtener el Id del empleado de la sesión
+            var empleadoId = HttpContext.Session.GetInt32("EmpleadoId");
+            Console.WriteLine($"Empleado ID recuperado de la sesión: {empleadoId}");
 
+            if (!empleadoId.HasValue)
+            {
+                // No se pudo obtener el Id del empleado de la sesión
+                ModelState.AddModelError("", "No se pudo obtener el Id del empleado.");
+                return RedirectToAction("EntradaSalida", model);
+            }
 
-// GET: /Login/Historial
-public IActionResult Historial()
-{
-    // Obtener todos los registros de entrada y salida de la base de datos
-    var registros = _context.RegistrosEntrada_Salida
-        .Include(r => r.Empleado) // Incluir información del empleado asociado
-        .ToList();
+            // Asignar el Id del empleado al campo IdEmpleado del modelo
+            model.IdEmpleado = empleadoId.Value;
 
-    return View(registros);
-}
+            // Guardar en la base de datos
+            _context.RegistrosEntrada_Salida.Add(model);
+            _context.SaveChanges();
 
-// GeT: /Login/Empleados
-public IActionResult Empleados()
-{
-    // Obtener todos los empleados de la base de datos
-    var empleados = _context.Empleados
-       .ToList();
+            // Redireccionar a la página de Historial
+            return RedirectToAction("Historial");
+        }
 
-    return View(empleados);
-}
+        // GET: /Login/Historial
+        public IActionResult Historial()
+        {
+            // Obtener todos los registros de entrada y salida de la base de datos
+            var registros = _context.RegistrosEntrada_Salida
+                .Include(r => r.Empleado) // Incluir información del empleado asociado
+                .ToList();
 
+            return View(registros);
+        }
 
-//Post: /Login/Create
+        // GET: /Login/Empleados
+        public IActionResult Empleados()
+        {
+            // Obtener todos los empleados de la base de datos
+            var empleados = _context.Empleados.ToList();
 
+            return View(empleados);
+        }
 
+        // POST: /Login/Create
         public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Empleado empleado)
@@ -136,6 +123,14 @@ public IActionResult Empleados()
             return View(empleado);
         }
 
-
+        // POST: /Login/CerrarSesion
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CerrarSesion()
+        {
+            // Remueve el ID de empleado de la sesión
+            HttpContext.Session.Remove("EmpleadoId");
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
