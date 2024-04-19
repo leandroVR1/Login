@@ -1,56 +1,84 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using GestionEmpledo.Models;
-using GestionEmpledo.Data;
+using GestionEmpledo.Data; // Agrega este using para acceder a HttpContext.Session
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using Microsoft.AspNetCore.Http; // Agrega este using para acceder a HttpContext.Session
+using Microsoft.AspNetCore.Http;
+
+
+
+
 
 namespace GestionEmpledo.Controllers
 {
+    [Authorize]
     public class LoginController : Controller
-    {
+    {   
+        private readonly ILogger<LoginController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public LoginController(ApplicationDbContext context)
+        public LoginController(ApplicationDbContext context, ILogger<LoginController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: /Login
+         [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
         // POST: /Login
-        public IActionResult Login(string correo, string contraseña)
-        {
-            if (string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(contraseña))
-            {
-                ModelState.AddModelError("", "Por favor, ingrese el correo y la contraseña.");
-                return View("Index");
-            }
+         [HttpPost]
+         [AllowAnonymous]
+public async Task<IActionResult> Login(string correo, string contraseña)
+{
+    if (string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(contraseña))
+    {
+        ModelState.AddModelError("", "Por favor, ingrese el correo y la contraseña.");
+        return View("Index");
+    }
 
-            var empleado = _context.Empleados.FirstOrDefault(u => u.Correo == correo && u.Contraseña == contraseña);
+    var empleado = _context.Empleados.FirstOrDefault(u => u.Correo == correo && u.Contraseña == contraseña);
 
-            if (empleado != null)
-            {
-                // Autenticación exitosa
-                // Guarda información del usuario en la sesión, por ejemplo el Id del usuario
-                HttpContext.Session.SetInt32("EmpleadoId", empleado.Id);
+    if (empleado != null)
+    {
+        // Autenticación exitosa
+        HttpContext.Session.SetInt32("EmpleadoId", empleado.Id);
 
                 // Agrega un registro de depuración para verificar si el ID del empleado se guardó correctamente
-                Console.WriteLine($"Empleado ID guardado en la sesión: {empleado.Id}");
+        Console.WriteLine($"Empleado ID guardado en la sesión: {empleado.Id}");
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, empleado.Id.ToString()),
+            new Claim(ClaimTypes.Name, empleado.Nombre)
+            // Puedes agregar más claims si es necesario
+        };
 
-                return RedirectToAction("EntradaSalida");
-            }
-            else
-            {
-                // Credenciales inválidas
-                ModelState.AddModelError("", "Correo o contraseña incorrectos");
-                return View("Index");
-            }
-        }
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(claimsIdentity);
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        // Redirige al usuario a la página de EntradaSalida
+        return RedirectToAction("EntradaSalida");
+    }
+    else
+    {
+        // Credenciales inválidas
+        ModelState.AddModelError("", "Correo o contraseña incorrectos");
+        return View("Index");
+    }
+}
 
         // GET: /Login/EntradaSalida
         public IActionResult EntradaSalida()
@@ -60,6 +88,7 @@ namespace GestionEmpledo.Controllers
         }
 
         // POST: /Login/GuardarEntradaSalida
+         [AllowAnonymous]
         public IActionResult GuardarEntradaSalida(RegistrosEntrada_Salida model)
         {
             // Obtener el Id del empleado de la sesión
@@ -85,7 +114,7 @@ namespace GestionEmpledo.Controllers
         }
 
         // GET: /Login/Historial
-        public IActionResult Historial()
+             public IActionResult Historial()
         {
             // Obtener todos los registros de entrada y salida de la base de datos
             var registros = _context.RegistrosEntrada_Salida
@@ -126,9 +155,10 @@ namespace GestionEmpledo.Controllers
         // POST: /Login/CerrarSesion
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CerrarSesion()
+        public async Task<IActionResult> CerrarSesion()
         {
             // Remueve el ID de empleado de la sesión
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Remove("EmpleadoId");
             return RedirectToAction("Index", "Home");
         }

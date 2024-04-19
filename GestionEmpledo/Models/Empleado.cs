@@ -9,6 +9,7 @@ namespace GestionEmpledo.Models
         public string Telefono { get; set; }
         public string Correo { get; set; }
         public string Contraseña { get; set; }
+        public Rol IdRol { get; set; }
     }
 
    
